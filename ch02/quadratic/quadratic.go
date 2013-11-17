@@ -8,6 +8,7 @@ import (
 	"math/cmplx"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -23,11 +24,10 @@ a<i>x</i><sup>2</sup> + b<i>x</i> + c</p>`
 <input type="text" name="c" size="5"><br>
 <input type="submit" value="Calculate">
 </form><br>`
-	result = `%v<i>x</i><sup>2</sup> %s<i>x</i> %s 
-<span style="font-size:large">→</span>
-%v or %v`
+	arrow      = `<span style="font-size:x-large">&rarr;</span>`
 	pageBottom = `</body></html>`
 	anError    = `<p class="error">%s</p>`
+	delta      = 1e-15
 )
 
 type equation struct {
@@ -86,15 +86,45 @@ func processRequest(request *http.Request) (a, b, c float64, err error) {
 }
 
 func formatEquation(eq equation) string {
-	signed := func(x float64) string {
+	coefficient_string := func(x float64, power int) string {
+		output := make([]string, 2)
 		if math.Signbit(x) {
-			return fmt.Sprintf("- %v", math.Abs(x))
+			output = append(output, "- ")
+		} else if power != 2 {
+			output = append(output, "+ ")
+		}
+		if power == 0 || math.Abs(x) != 1 {
+			output = append(output, fmt.Sprintf("%v", math.Abs(x)))
+		}
+		return strings.Join(output, "")
+	}
+
+	output := make([]string, 3)
+	if eq.a != 0 {
+		output = append(output, fmt.Sprintf("%s<i>x</i><sup>2</sup>", coefficient_string(eq.a, 2)))
+	}
+	if eq.b != 0 {
+		output = append(output, fmt.Sprintf("%s<i>x</i>", coefficient_string(eq.b, 1)))
+	}
+	if eq.c != 0 {
+		output = append(output, coefficient_string(eq.c, 0))
+	}
+	output = append(output, arrow)
+
+	complex_string := func(x complex128) string {
+		if EqualFloat(imag(x), 0, delta) {
+			return fmt.Sprintf("%v", real(x))
 		} else {
-			return fmt.Sprintf("+ %v", x)
+			return fmt.Sprintf("%v", x)
 		}
 	}
-	return fmt.Sprintf(result, eq.a, signed(eq.b), signed(eq.c),
-		eq.root1, eq.root2)
+
+	if EqualComplex(eq.root1, eq.root2, delta) {
+		output = append(output, complex_string(eq.root1))
+	} else {
+		output = append(output, complex_string(eq.root1), "or", complex_string(eq.root2))
+	}
+	return strings.Join(output, " ")
 }
 
 func solveEquation(a, b, c float64) (eq equation) {
@@ -105,4 +135,15 @@ func solveEquation(a, b, c float64) (eq equation) {
 	eq.root1 = (complex(-b, 0) + cmplx.Sqrt(disc)) / 2 / complex(a, 0)
 	eq.root2 = (complex(-b, 0) - cmplx.Sqrt(disc)) / 2 / complex(a, 0)
 	return eq
+}
+
+func EqualFloat(x, y, limit float64) bool {
+	if limit <= 0.0 {
+		limit = math.SmallestNonzeroFloat64
+	}
+	return math.Abs(x-y) <= (limit * math.Min(math.Abs(x), math.Abs(y)))
+}
+
+func EqualComplex(x, y complex128, limit float64) bool {
+	return EqualFloat(real(x), real(y), limit) && EqualFloat(imag(x), imag(y), limit)
 }
