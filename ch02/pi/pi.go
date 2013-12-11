@@ -6,12 +6,15 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"time"
 )
 
 func main() {
+	start := time.Now()
 	digits := digitsFromCommandLine(1000)
 	scaledPi := fmt.Sprint(π(digits))
 	fmt.Printf("3.%s\n", scaledPi[1:])
+	fmt.Println("Duration:", time.Since(start))
 }
 
 func digitsFromCommandLine(default_digits int) int {
