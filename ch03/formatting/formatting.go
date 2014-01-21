@@ -11,6 +11,9 @@ func main() {
 	t := parseBool("True")
 	f := parseBool("FALSE")
 	fmt.Printf("%t %t\n", t, f)
+	fmt.Println()
+	
+	fmt.Printf("|%b|%9b|%-9b|%09b|% 9b|\n", 37, 37, 37, 37, 37)
 }
 
 func intForBool(b bool) int {
