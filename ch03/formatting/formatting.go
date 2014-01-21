@@ -13,7 +13,8 @@ func main() {
 	fmt.Printf("%t %t\n", t, f)
 	fmt.Println()
 	
-	fmt.Printf("|%b|%9b|%-9b|%09b|% 9b|\n", 37, 37, 37, 37, 37)
+	fmt.Println("|123456" + strings.Repeat("|123456789", 5) + strings.Repeat("|1234567", 2) + "|")
+	fmt.Printf("|%b|%9b|%-9b|%09b|% 9b|% 9b|% 7b|% 7b|\n", 37, 37, 37, 37, 37, -37, 37, -37)
 }
 
 func intForBool(b bool) int {
