@@ -18,12 +18,14 @@ func main() {
 }
 
 func digitsFromCommandLine(default_digits int) int {
-	if len(os.Args) > 2 || (len(os.Args) > 1 && (os.Args[1] == "-h" || os.Args[1] == "--help")) {
+	if len(os.Args) > 2 || (len(os.Args) > 1 &&
+		(os.Args[1] == "-h" || os.Args[1] == "--help")) {
 		exitWithUsage()
 	}
 	if len(os.Args) > 1 {
 		if places, err := strconv.Atoi(os.Args[1]); err != nil {
-			fmt.Printf("%s: invalid number\n", filepath.Base(os.Args[0]))
+			fmt.Printf("%s: invalid number %s\n",
+				filepath.Base(os.Args[0]), os.Args[1])
 			exitWithUsage()
 		} else {
 			return places
@@ -39,16 +41,12 @@ func exitWithUsage() {
 
 func π(digits int) *big.Int {
 	factor := big.NewInt(int64(digits))
-	unity := big.NewInt(0)
 	ten := big.NewInt(10)
-	exponent := big.NewInt(0)
-	unity.Exp(ten, exponent.Add(factor, ten), nil)
-	pi := big.NewInt(4)
-	left := arccot(big.NewInt(5), unity)
-	left.Mul(left, big.NewInt(4))
+	unity_exponent := big.NewInt(0).Add(factor, ten)
+	unity := big.NewInt(0).Exp(ten, unity_exponent.Add(factor, ten), nil)
+	left := big.NewInt(0).Mul(big.NewInt(4), arccot(big.NewInt(5), unity))
 	right := arccot(big.NewInt(239), unity)
-	left.Sub(left, right)
-	pi.Mul(pi, left)
+	pi := big.NewInt(0).Mul(big.NewInt(4), big.NewInt(0).Sub(left, right))
 	return pi.Div(pi, big.NewInt(0).Exp(ten, ten, nil))
 }
 
