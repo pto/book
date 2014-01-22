@@ -32,6 +32,28 @@ func main() {
 	for _, x := range []float64{-.258, 7194.84, -60897162.0218, 1.500089e-8} {
 		fmt.Printf("|%20.5e|%20.5f|%s|\n", x, x, Humanize(x, 20, 5, '*', ','))
 	}
+	fmt.Println()
+
+	for _, x := range []complex128{
+		2 + 3i, 172.6 - 58.3019i, -.827e2 + 9.04831e-3i} {
+		fmt.Printf("|%15s|%9.3f|%.2f|%.1e|\n",
+			fmt.Sprintf("%6.2f%+.3fi", real(x), imag(x)), x, x, x)
+	}
+	fmt.Println()
+
+	slogan := "End Óréttlæti♥"
+	fmt.Printf("%s\n%q\n%+q\n%#q\n", slogan, slogan, slogan, slogan)
+	chars := []rune(slogan)
+	fmt.Printf("%x\n%#x\n%#X\n", chars, chars, chars)
+	bytes := []byte(slogan)
+	fmt.Printf("%s\n%x\n%X\n% X\n%v\n% #x\n",
+		bytes, bytes, bytes, bytes, bytes, bytes)
+	fmt.Println()
+
+	s := "Dare to be naïve"
+	fmt.Printf("|%22s|%-22s|%10s|%5s|\n", s, s, s, s)
+	i = strings.Index(s, "n")
+	fmt.Printf("|%.10s|%.*s|%-22.10s|%s|\n", s, i, s, s, s)
 }
 
 func intForBool(b bool) int {
