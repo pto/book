@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"strings"
 	"time"
 	"unicode"
@@ -56,6 +57,28 @@ func main() {
 		SimplifyWhitespace(names)
 	}
 	fmt.Println("SimplifyWhitespace duration:", time.Since(start))
+	fmt.Println()
+
+	asciiOnly := func(char rune) rune {
+		if char > 127 {
+			return '?'
+		}
+		return char
+	}
+	fmt.Println(strings.Map(asciiOnly, "Jérôme Österreich 💤  !"))
+	fmt.Println()
+
+	reader := strings.NewReader("Café 🚂  ❉")
+	for {
+		char, size, err := reader.ReadRune()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			panic(err)
+		}
+		fmt.Printf("%U '%c' %d: % X\n", char, char, size, []byte(string(char)))
+	}
 }
 
 func MySimplifyWhitespace(s string) string {
