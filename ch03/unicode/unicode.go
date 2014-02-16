@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"unicode"
+)
 
 func main() {
 	fmt.Println("\u212bngstrom")
@@ -17,4 +20,12 @@ func main() {
 		æs += string(char)
 	}
 	fmt.Println(æs)
+	fmt.Println()
+
+	fmt.Println(IsHexDigit('8'), IsHexDigit('x'), IsHexDigit('X'),
+		IsHexDigit('b'), IsHexDigit('B'))
+}
+
+func IsHexDigit(r rune) bool {
+	return unicode.Is(unicode.ASCII_Hex_Digit, r)
 }
