@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"regexp"
 	"strings"
 	"time"
 	"unicode"
 )
 
-const LOOPS = 10
+const LOOPS = 10000
 
 func main() {
 	names := "Niccolò•Noël•Geoffrey•Amélie••Turlough•José"
@@ -57,6 +58,12 @@ func main() {
 		SimplifyWhitespace(names)
 	}
 	fmt.Println("SimplifyWhitespace duration:", time.Since(start))
+
+	start = time.Now()
+	for i := 0; i < LOOPS; i++ {
+		RegExpSimplifyWhitespace(names)
+	}
+	fmt.Println("RegExpSimplifyWhitespace duration:", time.Since(start))
 	fmt.Println()
 
 	asciiOnly := func(char rune) rune {
@@ -108,4 +115,10 @@ func SimplifyWhitespace(s string) string {
 		s = s[:len(s)-1]
 	}
 	return s
+}
+
+var simplifyWhitespaceRx = regexp.MustCompile(`[\s\p{Zl}\p{Zp}]+`)
+
+func RegExpSimplifyWhitespace(s string) string {
+	return strings.TrimSpace(simplifyWhitespaceRx.ReplaceAllLiteralString(s, " "))
 }
