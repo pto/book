@@ -6,6 +6,7 @@ import (
 )
 
 func main() {
+	fmt.Println("☯")
 	fmt.Println("\u212bngstrom")
 	fmt.Println("\u00c5 or A\u030a or \x41\xcc\x8a")
 	fmt.Println("\u212b" == "\xe2\x84\xab")
